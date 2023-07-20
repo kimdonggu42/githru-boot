@@ -3,12 +3,13 @@ import * as d3 from 'd3';
 import { precipitationData } from '../data/precipitationData';
 
 function BarChart() {
-  const divRef = useRef<HTMLDivElement | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const width = 1000;
+  const height = 400;
+  const margin = { top: 20, right: 30, bottom: 30, left: 40 };
 
   useEffect(() => {
-    const width = 1000;
-    const height = 400;
-    const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+    const svg = d3.select(svgRef.current).attr('viewBox', `0,0,${width},${height}`);
 
     const xScale = d3
       .scaleBand()
@@ -21,12 +22,6 @@ function BarChart() {
       .domain([0, d3.max(precipitationData, (d) => d.precipitation)] as [number, number])
       .range([height - margin.bottom, margin.top])
       .nice();
-
-    const svg = d3
-      .select(divRef.current)
-      .call((g) => g.select('svg').remove())
-      .append('svg')
-      .attr('viewBox', `0,0,${width},${height}`);
 
     const xAxis = (g: d3.Selection<SVGGElement, unknown, null, undefined>) =>
       g.attr('transform', `translate(0,${height - margin.bottom})`).call(d3.axisBottom(xScale));
@@ -54,7 +49,7 @@ function BarChart() {
   return (
     <>
       <h1> Bar Chart </h1>
-      <div ref={divRef} />
+      <svg ref={svgRef} />
     </>
   );
 }

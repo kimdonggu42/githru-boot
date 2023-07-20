@@ -12,17 +12,13 @@ function LineChart() {
     date: new Date(value.date),
     temp: value.temp,
   }));
-  const divRef = useRef<HTMLDivElement | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const width = 1000;
   const height = 400;
   const margin = { top: 20, right: 30, bottom: 30, left: 40 };
 
   useEffect(() => {
-    const svg = d3
-      .select(divRef.current)
-      .call((g) => g.select('svg').remove())
-      .append('svg')
-      .attr('viewBox', `0,0,${width},${height}`);
+    const svg = d3.select(svgRef.current).attr('viewBox', `0,0,${width},${height}`);
 
     const xScale = d3
       .scaleUtc()
@@ -63,7 +59,7 @@ function LineChart() {
   return (
     <>
       <h1> Line Chart </h1>
-      <div ref={divRef} />
+      <svg ref={svgRef} />
     </>
   );
 }
