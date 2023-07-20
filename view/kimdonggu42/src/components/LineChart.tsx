@@ -8,50 +8,43 @@ interface ConverDateInterface {
 }
 
 function LineChart() {
+  const data = tempData.map((value) => ({
+    date: new Date(value.date),
+    temp: value.temp,
+  }));
   const divRef = useRef<HTMLDivElement | null>(null);
+  const width = 1000;
+  const height = 400;
+  const margin = { top: 20, right: 30, bottom: 30, left: 40 };
 
   useEffect(() => {
-    const width = 1000;
-    const height = 400;
-    const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-
-    const data = tempData.map((value) => ({
-      date: new Date(value.date),
-      temp: value.temp,
-    }));
-
-    const x = d3
-      .scaleUtc()
-      .domain(d3.extent(data, (d) => d.date) as [Date, Date])
-      .range([margin.left, width - margin.right]);
-
-    const y = d3
-      .scaleLinear()
-      .domain([d3.min(data, (d) => d.temp), d3.max(data, (d) => d.temp)] as [number, number])
-      .range([height - margin.bottom, margin.top])
-      .nice();
-
-    const line = d3
-      .line<ConverDateInterface>()
-      .x((d) => x(d.date))
-      .y((d) => y(d.temp));
-
     const svg = d3
       .select(divRef.current)
       .call((g) => g.select('svg').remove())
       .append('svg')
       .attr('viewBox', `0,0,${width},${height}`);
 
+    const xScale = d3
+      .scaleUtc()
+      .domain(d3.extent(data, (d) => d.date) as [Date, Date])
+      .range([margin.left, width - margin.right]);
+
+    const yScale = d3
+      .scaleLinear()
+      .domain([d3.min(data, (d) => d.temp), d3.max(data, (d) => d.temp)] as [number, number])
+      .range([height - margin.bottom, margin.top])
+      .nice();
+
     const xAxis = (g: d3.Selection<SVGGElement, unknown, null, undefined>) =>
-      g.attr('transform', `translate(0,${height - margin.bottom})`).call(
-        d3
-          .axisBottom(x)
-          .ticks(width / 80)
-          .tickSizeOuter(0),
-      );
+      g.attr('transform', `translate(0,${height - margin.bottom})`).call(d3.axisBottom(xScale));
 
     const yAxis = (g: d3.Selection<SVGGElement, unknown, null, undefined>) =>
-      g.attr('transform', `translate(${margin.left},0)`).call(d3.axisLeft(y));
+      g.attr('transform', `translate(${margin.left},0)`).call(d3.axisLeft(yScale));
+
+    const line = d3
+      .line<ConverDateInterface>()
+      .x((d) => xScale(d.date))
+      .y((d) => yScale(d.temp));
 
     svg.append<SVGGElement>('g').call(xAxis);
     svg.append<SVGGElement>('g').call(yAxis);
@@ -65,7 +58,7 @@ function LineChart() {
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .attr('d', line(data));
-  }, []);
+  }, [data]);
 
   return (
     <>
