@@ -13,13 +13,13 @@ function BarChart() {
 
     const xScale = d3
       .scaleBand()
-      .domain(precipitationData.map((d) => d.date) as Iterable<string>)
+      .domain(precipitationData.map((data) => data.date) as Iterable<string>)
       .range([margin.left, width - margin.right])
       .padding(0.3);
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(precipitationData, (d) => d.precipitation)] as [number, number])
+      .domain([0, d3.max(precipitationData, (data) => data.precipitation)] as [number, number])
       .range([height - margin.bottom, margin.top])
       .nice();
 
@@ -38,10 +38,10 @@ function BarChart() {
       .data(precipitationData)
       .enter()
       .append('rect')
-      .attr('x', (d) => xScale(d.date) as number)
-      .attr('y', (d) => yScale(d.precipitation))
+      .attr('x', (data) => xScale(data.date) as number)
+      .attr('y', (data) => yScale(data.precipitation))
       .attr('width', xScale.bandwidth())
-      .attr('height', (d) => yScale(0) - yScale(d.precipitation))
+      .attr('height', (data) => yScale(0) - yScale(data.precipitation))
       .attr('class', 'bar-chart')
       .attr('fill', 'steelblue');
   }, []);

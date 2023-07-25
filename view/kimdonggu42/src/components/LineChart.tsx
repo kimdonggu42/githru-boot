@@ -22,12 +22,15 @@ function LineChart() {
 
     const xScale = d3
       .scaleUtc()
-      .domain(d3.extent(data, (d) => d.date) as [Date, Date])
+      .domain(d3.extent(data, (data) => data.date) as [Date, Date])
       .range([margin.left, width - margin.right]);
 
     const yScale = d3
       .scaleLinear()
-      .domain([d3.min(data, (d) => d.temp), d3.max(data, (d) => d.temp)] as [number, number])
+      .domain([d3.min(data, (data) => data.temp), d3.max(data, (data) => data.temp)] as [
+        number,
+        number,
+      ])
       .range([height - margin.bottom, margin.top])
       .nice();
 
@@ -39,8 +42,8 @@ function LineChart() {
 
     const line = d3
       .line<ConverDateInterface>()
-      .x((d) => xScale(d.date))
-      .y((d) => yScale(d.temp));
+      .x((data) => xScale(data.date))
+      .y((data) => yScale(data.temp));
 
     svg.append<SVGGElement>('g').call(xAxis);
     svg.append<SVGGElement>('g').call(yAxis);
@@ -54,7 +57,7 @@ function LineChart() {
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .attr('d', line(data));
-  }, [data]);
+  }, []);
 
   return (
     <>
